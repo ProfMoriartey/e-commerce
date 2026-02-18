@@ -1,30 +1,90 @@
 import { db } from "~/server/db";
 import { products } from "~/server/db/schema";
 import { ProductCard } from "~/components/store/product-card";
+import { FilterSidebar } from "~/components/store/filter-sidebar";
+import { and, asc, desc, eq, gte, ilike, lte, sql } from "drizzle-orm";
 
-export default async function StorePage() {
-  // 1. Fetch all products (sorted by newest)
+type SearchParams = {
+  search?: string;
+  category?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+};
+
+export default async function StorePage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  // 1. Construct Filters
+  const filters = [];
+
+  if ((await searchParams).search) {
+    filters.push(ilike(products.name, `%${(await searchParams).search}%`));
+  }
+  if ((await searchParams).category) {
+    filters.push(eq(products.category, (await searchParams).category));
+  }
+  if ((await searchParams).minPrice) {
+    filters.push(
+      gte(products.price, Number((await searchParams).minPrice) * 100),
+    ); // Convert to cents
+  }
+  if ((await searchParams).maxPrice) {
+    filters.push(
+      lte(products.price, Number((await searchParams).maxPrice) * 100),
+    );
+  }
+
+  // 2. Determine Sort Order
+  let orderBy = desc(products.createdAt);
+  switch ((await searchParams).sort) {
+    case "price_asc":
+      orderBy = asc(products.price);
+      break;
+    case "price_desc":
+      orderBy = desc(products.price);
+      break;
+    case "name_asc":
+      orderBy = asc(products.name);
+      break;
+    case "newest":
+    default:
+      orderBy = desc(products.createdAt);
+      break;
+  }
+
+  // 3. Fetch Data
   const allProducts = await db.query.products.findMany({
-    orderBy: (products, { desc }) => [desc(products.createdAt)],
+    where: and(...filters),
+    orderBy: orderBy,
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-4xl font-bold">Our Collection</h1>
-
-      {/* 2. Grid Layout */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {allProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+    <div className="container mx-auto flex flex-col gap-8 px-4 py-8 md:flex-row">
+      {/* Sidebar */}
+      <div className="flex w-full shrink-0 md:w-64">
+        <FilterSidebar />
       </div>
 
-      {/* 3. Empty State */}
-      {allProducts.length === 0 && (
-        <div className="py-20 text-center">
-          <p className="text-xl text-gray-500">No products found.</p>
+      {/* Product Grid */}
+      <div className="flex-1">
+        <h1 className="mb-6 text-3xl font-bold">Store</h1>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {allProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
-      )}
+
+        {allProducts.length === 0 && (
+          <div className="rounded-lg border-2 border-dashed py-12 text-center">
+            <h3 className="text-lg font-medium">No products found</h3>
+            <p className="text-gray-500">Try adjusting your filters.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
