@@ -28,7 +28,7 @@ export function AddToCartButton({
   return (
     <Button
       size="lg"
-      className="w-full sm:w-auto"
+      className="w-1/2 sm:w-auto"
       disabled={disabled || isPending}
       onClick={handleAddToCart}
     >
