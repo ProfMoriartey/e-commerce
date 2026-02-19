@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
+import { ToggleStatusButton } from "~/components/admin/toggle-status-button";
 
 export default async function AdminProductsPage() {
   const allProducts = await db.query.products.findMany({
@@ -33,8 +34,7 @@ export default async function AdminProductsPage() {
             <TableRow>
               <TableHead className="w-25">Image</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -43,7 +43,7 @@ export default async function AdminProductsPage() {
             {allProducts.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="py-10 text-center text-stone-500"
                 >
                   No products found
@@ -63,12 +63,23 @@ export default async function AdminProductsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell className="capitalize">
-                    {product.category}
+                  <TableCell>
+                    <span
+                      className={`rounded-full px-2 py-1 text-xs font-medium ${
+                        product.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {product.isActive ? "Active" : "Inactive"}
+                    </span>
                   </TableCell>
-                  <TableCell>${(product.price / 100).toFixed(2)}</TableCell>
                   <TableCell>{product.stock}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="space-x-2 text-right">
+                    <ToggleStatusButton
+                      id={product.id}
+                      isActive={product.isActive}
+                    />
                     <Button variant="ghost" size="sm" asChild>
                       <Link href={`/admin/products/${product.id}/edit`}>
                         Edit

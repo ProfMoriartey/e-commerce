@@ -2,6 +2,7 @@ import {
   pgTable,
   text,
   integer,
+  boolean,
   timestamp,
   uuid,
   pgEnum,
@@ -21,6 +22,7 @@ export const products = pgTable("products", {
   category: text("category").notNull(),
   stock: integer("stock").notNull().default(0),
   imageUrl: text("image_url").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

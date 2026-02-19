@@ -77,3 +77,21 @@ export async function deleteProduct(id: string) {
   revalidatePath("/admin/products")
   redirect("/admin/products")
 }
+
+export async function toggleProductStatus(id: string, currentStatus: boolean) {
+  const { sessionClaims } = await auth()
+  const role = sessionClaims?.metadata?.role
+
+  if (role !== "developer" && role !== "admin" && role !== "personnel") {
+    throw new Error("Unauthorized")
+  }
+
+  await db
+    .update(products)
+    .set({ isActive: !currentStatus })
+    .where(eq(products.id, id))
+
+  revalidatePath("/admin/products")
+  revalidatePath("/store")
+  revalidatePath("/")
+}
