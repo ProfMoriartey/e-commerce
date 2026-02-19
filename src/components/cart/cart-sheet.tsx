@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import Image from "next/image";
-import { removeCartItem } from "~/server/actions/cart";
+import { removeCartItem, updateCartItemQuantity } from "~/server/actions/cart";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import {
@@ -13,7 +13,6 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 
-// Define the type based on your database query return
 type CartItem = {
   cartId: string;
   quantity: number;
@@ -22,6 +21,7 @@ type CartItem = {
     name: string;
     price: number;
     imageUrl: string;
+    stock: number;
   };
 };
 
@@ -44,6 +44,18 @@ export function CartSheet({ items }: { items: CartItem[] }) {
     });
   }
 
+  function handleQuantityChange(
+    cartId: string,
+    newQuantity: number,
+    stock: number,
+  ) {
+    if (newQuantity > stock) return;
+
+    startTransition(async () => {
+      await updateCartItemQuantity(cartId, newQuantity);
+    });
+  }
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -59,7 +71,7 @@ export function CartSheet({ items }: { items: CartItem[] }) {
           <div className="space-y-6">
             {items.length === 0 ? (
               <p className="py-10 text-center text-gray-500">
-                Your cart is empty.
+                Your cart is empty
               </p>
             ) : (
               items.map((item) => (
@@ -80,21 +92,56 @@ export function CartSheet({ items }: { items: CartItem[] }) {
                     <h4 className="line-clamp-1 font-medium">
                       {item.product.name}
                     </h4>
-                    <p className="text-sm text-gray-500">
-                      Qty: {item.quantity}
-                    </p>
+
+                    <div className="mt-2 flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-6 w-6"
+                        disabled={isPending}
+                        onClick={() =>
+                          handleQuantityChange(
+                            item.cartId,
+                            item.quantity - 1,
+                            item.product.stock,
+                          )
+                        }
+                      >
+                        -
+                      </Button>
+                      <span className="w-4 text-center text-sm">
+                        {item.quantity}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-6 w-6"
+                        disabled={
+                          isPending || item.quantity >= item.product.stock
+                        }
+                        onClick={() =>
+                          handleQuantityChange(
+                            item.cartId,
+                            item.quantity + 1,
+                            item.product.stock,
+                          )
+                        }
+                      >
+                        +
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
                     <span className="font-semibold">
-                      ${(item.product.price / 100).toFixed(2)}
+                      ${((item.product.price * item.quantity) / 100).toFixed(2)}
                     </span>
                     <Button
-                      variant="destructive"
+                      variant="ghost"
                       size="sm"
                       disabled={isPending}
                       onClick={() => handleRemove(item.cartId)}
-                      className="h-7 text-xs"
+                      className="h-7 text-xs text-red-500 hover:text-red-700"
                     >
                       Remove
                     </Button>
