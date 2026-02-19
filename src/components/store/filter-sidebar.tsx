@@ -16,7 +16,7 @@ import {
 } from "~/components/ui/select";
 
 // Example categories - you might fetch these dynamically later
-const CATEGORIES = ["Clothing", "Electronics", "Home", "Accessories"];
+const CATEGORIES = ["Clothing", "Electronics", "Home", "Accessories", "fsaads"];
 
 export function FilterSidebar() {
   const router = useRouter();
@@ -77,17 +77,31 @@ export function FilterSidebar() {
           ))}
         </div>
       </div>
-
       {/* 3. Price Range */}
       <div className="space-y-4">
         <h3 className="font-semibold">Price Range</h3>
         <Slider
-          defaultValue={[0, 1000]}
+          defaultValue={[
+            Number(searchParams.get("minPrice")) || 0,
+            Number(searchParams.get("maxPrice")) || 1000,
+          ]}
           max={1000}
           step={10}
           onValueCommit={(val) => {
-            updateFilters("minPrice", val[0].toString());
-            updateFilters("maxPrice", val[1].toString());
+            const min = val[0];
+            const max = val[1];
+
+            // Explicitly check if the extracted variables are undefined
+            if (min === undefined || max === undefined) return;
+
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("minPrice", min.toString());
+            params.set("maxPrice", max.toString());
+            params.delete("page");
+
+            startTransition(() => {
+              router.push(`/store?${params.toString()}`);
+            });
           }}
         />
         <div className="flex justify-between text-sm text-gray-500">

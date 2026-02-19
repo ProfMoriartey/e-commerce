@@ -17,27 +17,26 @@ export default async function StorePage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  // 1. Construct Filters
+  // 1. Await the params ONCE at the top
+  const params = await searchParams;
+
   const filters = [];
 
-  if ((await searchParams).search) {
-    filters.push(ilike(products.name, `%${(await searchParams).search}%`));
+  // 2. TypeScript now correctly remembers the type inside these blocks
+  if (params.search) {
+    filters.push(ilike(products.name, `%${params.search}%`));
   }
-  if ((await searchParams).category) {
-    filters.push(eq(products.category, (await searchParams).category));
+  if (params.category) {
+    filters.push(eq(products.category, params.category)); // Error is gone!
   }
-  if ((await searchParams).minPrice) {
-    filters.push(
-      gte(products.price, Number((await searchParams).minPrice) * 100),
-    ); // Convert to cents
+  if (params.minPrice) {
+    filters.push(gte(products.price, Number(params.minPrice) * 100));
   }
-  if ((await searchParams).maxPrice) {
-    filters.push(
-      lte(products.price, Number((await searchParams).maxPrice) * 100),
-    );
+  if (params.maxPrice) {
+    filters.push(lte(products.price, Number(params.maxPrice) * 100));
   }
 
-  // 2. Determine Sort Order
+  // 3. Determine Sort Order
   let orderBy = desc(products.createdAt);
   switch ((await searchParams).sort) {
     case "price_asc":
@@ -55,7 +54,7 @@ export default async function StorePage({
       break;
   }
 
-  // 3. Fetch Data
+  // 4. Fetch Data
   const allProducts = await db.query.products.findMany({
     where: and(...filters),
     orderBy: orderBy,
