@@ -2,7 +2,7 @@ import { db } from "~/server/db";
 import { products } from "~/server/db/schema";
 import { ProductCard } from "~/components/store/product-card";
 import { FilterSidebar } from "~/components/store/filter-sidebar";
-import { and, asc, desc, eq, gte, ilike, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, lte } from "drizzle-orm";
 
 type SearchParams = {
   search?: string;

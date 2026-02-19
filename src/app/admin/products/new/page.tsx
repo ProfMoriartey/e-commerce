@@ -19,8 +19,9 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { toast } from "sonner"; // Or your preferred toast library
+import Image from "next/image";
 
 export default function AddProductPage() {
   const [isPending, startTransition] = useTransition();
@@ -143,7 +144,7 @@ export default function AddProductPage() {
                   <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center">
                     {field.value ? (
                       <div className="relative mx-auto aspect-video w-full max-w-xs overflow-hidden rounded-md">
-                        <img
+                        <Image
                           src={field.value}
                           alt="Product preview"
                           className="h-full w-full object-cover"
