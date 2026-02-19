@@ -4,6 +4,7 @@ import { eq, desc } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { ConfirmOrderButton } from "~/components/admin/confirm-order-button";
+import { EditOrderQuantity } from "~/components/admin/edit-order-quantity";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 export default async function PersonnelOrdersPage() {
@@ -52,13 +53,33 @@ export default async function PersonnelOrdersPage() {
               <CardContent className="pt-6">
                 <div className="mb-6 space-y-4">
                   {order.items.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span>
-                        {item.quantity}x {item.product.name}
-                      </span>
-                      <span className="text-gray-500">
-                        ${(item.priceAtPurchase / 100).toFixed(2)} each
-                      </span>
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between border-b pb-4 text-sm last:border-0"
+                    >
+                      <div className="flex items-center gap-4">
+                        <EditOrderQuantity
+                          orderId={order.id}
+                          itemId={item.id}
+                          currentQuantity={item.quantity}
+                        />
+                        <span className="text-base font-medium">
+                          {item.product.name}
+                        </span>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="block text-gray-500">
+                          ${(item.priceAtPurchase / 100).toFixed(2)} each
+                        </span>
+                        <span className="font-bold">
+                          $
+                          {(
+                            (item.priceAtPurchase * item.quantity) /
+                            100
+                          ).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

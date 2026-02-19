@@ -44,12 +44,18 @@ export async function processCheckout() {
     })
     .returning()
 
+    if (!newOrder) {
+    throw new Error("Failed to create the order record")
+  }
+
   const orderItemsData = cartItems.map((item) => ({
     orderId: newOrder.id,
     productId: item.product.id,
     quantity: item.quantity,
     priceAtPurchase: item.product.price,
   }))
+
+  
 
   await db.insert(orderItems).values(orderItemsData)
 
