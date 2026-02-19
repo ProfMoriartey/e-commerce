@@ -12,6 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import Link from "next/link";
 
 type CartItem = {
   cartId: string;
@@ -157,9 +158,11 @@ export function CartSheet({ items }: { items: CartItem[] }) {
             <span>Total</span>
             <span>{formattedTotal}</span>
           </div>
-          <Button className="w-full" size="lg" disabled={items.length === 0}>
-            Proceed to Checkout
-          </Button>
+          <Link href={"/checkout"}>
+            <Button className="w-full" size="lg" disabled={items.length === 0}>
+              Proceed to Checkout
+            </Button>
+          </Link>
         </div>
       </SheetContent>
     </Sheet>
