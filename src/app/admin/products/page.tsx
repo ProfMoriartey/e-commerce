@@ -20,7 +20,7 @@ import { SortableHeader } from "~/components/admin/sortable-header";
 export default async function AdminProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const resolvedParams = await searchParams;
 

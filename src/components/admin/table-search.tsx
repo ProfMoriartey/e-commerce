@@ -28,12 +28,12 @@ export function TableSearch() {
     <div className="mb-6 flex gap-4">
       <Input
         placeholder="Search products by name..."
-        defaultValue={searchParams.get("search") || ""}
+        defaultValue={searchParams.get("search") ?? ""}
         onChange={(e) => updateUrl("search", e.target.value)}
         className="max-w-sm"
       />
       <Select
-        defaultValue={searchParams.get("status") || "all"}
+        defaultValue={searchParams.get("status") ?? "all"}
         onValueChange={(value) => updateUrl("status", value)}
       >
         <SelectTrigger className="w-45">
