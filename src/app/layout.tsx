@@ -11,6 +11,8 @@ import {
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { getCartItems } from "~/server/actions/cart";
+import { CartSheet } from "~/components/cart/cart-sheet";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -23,26 +25,36 @@ const geist = Geist({
   variable: "--font-geist-sans",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const cartItems = await getCartItems();
   return (
     <ClerkProvider>
       <html lang="en" className={`${geist.variable}`}>
         <body>
           {/* Show the sign-in and sign-up buttons when the user is signed out */}
-          <SignedOut>
-            <SignInButton />
-            <SignUpButton>
-              <button className="h-10 cursor-pointer rounded-full bg-[#6c47ff] px-4 text-sm font-medium text-white sm:h-12 sm:px-5 sm:text-base">
-                Sign Up
-              </button>
-            </SignUpButton>
-          </SignedOut>
-          {/* Show the user button when the user is signed in */}
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+          <nav className="flex items-center justify-between border-b p-4">
+            <span className="text-xl font-bold">My Store</span>
+
+            {/* Render the client component and pass the data */}
+            <div className="gap-5">
+              <CartSheet items={cartItems} />
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton>
+                  <button className="h-10 cursor-pointer rounded-full bg-[#6c47ff] px-4 text-sm font-medium text-white sm:h-12 sm:px-5 sm:text-base">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </SignedOut>
+              {/* Show the user button when the user is signed in */}
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+          </nav>
+
           {children}
         </body>
       </html>

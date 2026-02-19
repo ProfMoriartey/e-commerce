@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "~/server/db"
-import { cart } from "~/server/db/schema"
+import { cart, products } from "~/server/db/schema"
 import { auth } from "@clerk/nextjs/server"
 import { eq, and } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -35,4 +35,32 @@ export async function addToCart(productId: string) {
 
   revalidatePath("/store")
   revalidatePath(`/store/${productId}`)
+}
+
+export async function getCartItems() {
+  const { userId } = await auth()
+  
+  if (!userId) return []
+
+  return await db
+    .select({
+      cartId: cart.id,
+      quantity: cart.quantity,
+      product: products,
+    })
+    .from(cart)
+    .innerJoin(products, eq(cart.productId, products.id))
+    .where(eq(cart.userId, userId))
+}
+
+export async function removeCartItem(cartId: string) {
+  const { userId } = await auth()
+  
+  if (!userId) throw new Error("Unauthorized")
+
+  await db
+    .delete(cart)
+    .where(and(eq(cart.id, cartId), eq(cart.userId, userId)))
+
+  revalidatePath("/store")
 }
