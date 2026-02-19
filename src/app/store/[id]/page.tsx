@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
+import { AddToCartButton } from "~/components/cart/add-to-cart-button";
 
 export default async function SingleItemPage({
   params,
@@ -61,13 +62,10 @@ export default async function SingleItemPage({
           </div>
 
           <div className="flex flex-col gap-4 border-t pt-6 sm:flex-row">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto"
+            <AddToCartButton
+              productId={product.id}
               disabled={product.stock === 0}
-            >
-              Add to Cart
-            </Button>
+            />
             <Button size="lg" variant="outline" className="w-full sm:w-auto">
               Add to Wishlist
             </Button>
@@ -75,7 +73,7 @@ export default async function SingleItemPage({
 
           <div className="mt-8 border-t pt-8">
             <h2 className="mb-4 text-2xl font-bold">Customer Reviews</h2>
-            <p className="text-gray-500">Reviews will appear here.</p>
+            <p className="text-gray-500">Reviews will appear here</p>
           </div>
         </div>
       </div>

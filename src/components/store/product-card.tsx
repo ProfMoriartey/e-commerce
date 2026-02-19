@@ -8,6 +8,7 @@ import {
   CardFooter,
   CardHeader,
 } from "~/components/ui/card";
+import { AddToCartButton } from "../cart/add-to-cart-button";
 
 // Helper to format cents to dollars
 const formatPrice = (price: number) => {
@@ -53,7 +54,10 @@ export function ProductCard({
         <Button asChild variant="outline" className="w-1/2">
           <Link href={`/store/${product.id}`}>View Details</Link>
         </Button>
-        <Button className="w-1/2">Add to Cart</Button>
+        <AddToCartButton
+          productId={product.id}
+          disabled={product.stock === 0}
+        />
       </CardFooter>
     </Card>
   );
