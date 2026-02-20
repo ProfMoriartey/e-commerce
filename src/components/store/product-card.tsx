@@ -27,7 +27,10 @@ export function ProductCard({
     <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
       <div className="relative aspect-square">
         <Image
-          src={product.imageUrl}
+          src={
+            product.imageUrls[0] ||
+            "https://2ryc0965uu.ufs.sh/f/4eZ295a0yxSvv715LWVYlHGwm1E7g0NJYAURF4WPncp6rt2h"
+          }
           alt={product.name}
           fill
           className="object-cover"

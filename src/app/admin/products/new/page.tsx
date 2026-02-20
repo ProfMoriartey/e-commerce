@@ -147,6 +147,7 @@ export default function AddProductPage() {
                         <Image
                           src={field.value}
                           alt="Product preview"
+                          fill
                           className="h-full w-full object-cover"
                         />
                         <Button

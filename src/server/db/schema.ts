@@ -21,7 +21,7 @@ export const products = pgTable("products", {
   price: integer("price").notNull(), // Store in cents (e.g., 1000 = $10.00)
   category: text("category").notNull(),
   stock: integer("stock").notNull().default(0),
-  imageUrl: text("image_url").notNull(),
+  imageUrls: text("image_urls").array().default(['https://2ryc0965uu.ufs.sh/f/4eZ295a0yxSvv715LWVYlHGwm1E7g0NJYAURF4WPncp6rt2h']).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

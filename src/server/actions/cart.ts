@@ -50,7 +50,7 @@ export async function getCartItems() {
         id: products.id,
         name: products.name,
         price: products.price,
-        imageUrl: products.imageUrl,
+        imageUrls: products.imageUrls,
         stock: products.stock, 
       },
     })

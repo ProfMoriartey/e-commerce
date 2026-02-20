@@ -32,7 +32,7 @@ export default async function SingleItemPage({
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
           <Image
-            src={product.imageUrl}
+            src={product.imageUrls[0] || ""}
             alt={product.name}
             fill
             className="object-cover"

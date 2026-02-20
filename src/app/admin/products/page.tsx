@@ -139,7 +139,7 @@ export default async function AdminProductsPage({
                   <TableCell>
                     <div className="relative h-12 w-12 overflow-hidden rounded bg-stone-100">
                       <Image
-                        src={product.imageUrl}
+                        src={product.imageUrls[0] || ""}
                         alt={product.name}
                         fill
                         className="object-cover"
