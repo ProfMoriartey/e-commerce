@@ -22,6 +22,7 @@ import {
 import { useTransition } from "react";
 import { toast } from "sonner"; // Or your preferred toast library
 import Image from "next/image";
+import { X } from "lucide-react";
 
 export default function AddProductPage() {
   const [isPending, startTransition] = useTransition();
@@ -34,7 +35,7 @@ export default function AddProductPage() {
       price: 0,
       stock: 0,
       category: "",
-      imageUrl: "",
+      imageUrls: [],
     },
   });
 
@@ -136,36 +137,50 @@ export default function AddProductPage() {
           {/* Image Upload */}
           <FormField
             control={form.control}
-            name="imageUrl"
+            name="imageUrls"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Product Image</FormLabel>
+                <FormLabel>Product Images</FormLabel>
                 <FormControl>
-                  <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center">
-                    {field.value ? (
-                      <div className="relative mx-auto aspect-video w-full max-w-xs overflow-hidden rounded-md">
-                        <Image
-                          src={field.value}
-                          alt="Product preview"
-                          fill
-                          className="h-full w-full object-cover"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          className="absolute top-2 right-2"
-                          onClick={() => field.onChange("")}
-                        >
-                          Remove
-                        </Button>
+                  <div className="space-y-4">
+                    {field.value.length > 0 && (
+                      <div className="flex flex-wrap gap-4">
+                        {field.value.map((url, index) => (
+                          <div
+                            key={url}
+                            className="relative h-24 w-24 overflow-hidden rounded-md border border-gray-200"
+                          >
+                            <Image
+                              src={url}
+                              alt={`Product preview ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-1 right-1 h-6 w-6"
+                              onClick={() => {
+                                const newUrls = [...field.value];
+                                newUrls.splice(index, 1);
+                                field.onChange(newUrls);
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
                       </div>
-                    ) : (
+                    )}
+
+                    {field.value.length < 5 && (
                       <UploadButton
                         endpoint="imageUploader"
                         onClientUploadComplete={(res) => {
-                          field.onChange(res[0]?.url);
-                          toast.success("Image uploaded");
+                          const newUrls = res.map((file) => file.url);
+                          field.onChange([...field.value, ...newUrls]);
+                          toast.success("Images uploaded");
                         }}
                         onUploadError={(error: Error) => {
                           toast.error(`ERROR! ${error.message}`);

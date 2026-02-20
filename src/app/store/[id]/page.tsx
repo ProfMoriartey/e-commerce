@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Button } from "~/components/ui/button";
 import { AddToCartButton } from "~/components/cart/add-to-cart-button";
+import { ImageGallery } from "~/components/store/image-gallery";
 
 export default async function SingleItemPage({
   params,
@@ -31,13 +32,7 @@ export default async function SingleItemPage({
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
-          <Image
-            src={product.imageUrls[0] || ""}
-            alt={product.name}
-            fill
-            className="object-cover"
-            priority
-          />
+          <ImageGallery images={product.imageUrls} />
         </div>
 
         <div className="flex flex-col space-y-6">

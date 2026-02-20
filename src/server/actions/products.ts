@@ -27,7 +27,7 @@ export async function createProduct(data: unknown) {
     price: Math.round(parsed.price * 100), // $10.99 -> 1099
     stock: parsed.stock,
     category: parsed.category,
-    imageUrl: parsed.imageUrl,
+   imageUrls: parsed.imageUrls,
   });
 
   // 4. Redirect back to inventory
