@@ -21,7 +21,7 @@ type CartItem = {
     id: string;
     name: string;
     price: number;
-    imageUrls: string;
+    imageUrl: string;
     stock: number;
   };
 };
@@ -82,7 +82,7 @@ export function CartSheet({ items }: { items: CartItem[] }) {
                 >
                   <div className="relative flex h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-100">
                     <Image
-                      src={item.product.imageUrls}
+                      src={item.product.imageUrl}
                       alt={item.product.name}
                       fill
                       className="object-cover"

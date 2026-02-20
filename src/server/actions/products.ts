@@ -34,7 +34,7 @@ export async function createProduct(data: unknown) {
   redirect("/admin/products");
 }
 
-export async function updateProduct(id: string, formData: FormData) {
+export async function updateProduct(id: string, data: unknown) {
   const { sessionClaims } = await auth()
   const role = sessionClaims?.metadata?.role
 
@@ -42,20 +42,17 @@ export async function updateProduct(id: string, formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const name = formData.get("name") as string
-  const description = formData.get("description") as string
-  const price = Number(formData.get("price")) * 100
-  const stock = Number(formData.get("stock"))
-  const category = formData.get("category") as string
+  const parsed = productSchema.parse(data)
 
   await db
     .update(products)
     .set({
-      name,
-      description,
-      price,
-      stock,
-      category,
+      name: parsed.name,
+      description: parsed.description,
+      price: Math.round(parsed.price * 100),
+      stock: parsed.stock,
+      category: parsed.category,
+      imageUrls: parsed.imageUrls,
     })
     .where(eq(products.id, id))
 
